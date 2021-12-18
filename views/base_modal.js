@@ -1,97 +1,7 @@
-let { status_element, activity_element } = require("./ticket_elements");
+let ticket_generator = require('./update_ticket_generator')
 
 let divider = {
   type: "divider",
-};
-
-let ticket_title = () => ({
-  type: "section",
-  text: {
-    type: "mrkdwn",
-    text: "<https://sample.jp|バグ #40197> : *サポートフィーの算出の修正*",
-  },
-});
-
-let register_time = () => ({
-  type: "section",
-  text: {
-    type: "plain_text",
-    text: "作業時間",
-  },
-  accessory: {
-    type: "timepicker",
-    initial_time: "01:30",
-    placeholder: {
-      type: "plain_text",
-      text: "Select time",
-      emoji: true,
-    },
-    action_id: "timepicker-action",
-  },
-});
-
-let register_coment = () => ({
-  type: "input",
-  element: {
-    type: "plain_text_input",
-    multiline: true,
-    action_id: "plain_text_input-action",
-    placeholder: {
-      type: "plain_text",
-      text: "コメント",
-      emoji: true,
-    },
-  },
-  label: {
-    type: "plain_text",
-    text: " ",
-    emoji: true,
-  },
-});
-
-let ticket_generator = async () => {
-  return [
-    divider,
-    ticket_title(),
-    {
-      type: "actions",
-      elements: [
-        await status_element([
-          { id: 1, name: "新規" },
-          { id: 2, name: "進行中" },
-          { id: 3, name: "フィードバック" },
-        ]),
-        await activity_element([
-          { id: 8, name: "開発" },
-          { id: 9, name: "テスト" },
-          { id: 10, name: "会議・検討" },
-        ]),
-      ],
-    },
-    register_time(),
-    register_coment(),
-    remove_ticket_btn,
-    divider,
-    divider,
-  ];
-};
-
-let remove_ticket_btn = {
-  type: "section",
-  text: {
-    type: "mrkdwn",
-    text: " ",
-  },
-  accessory: {
-    type: "button",
-    text: {
-      type: "plain_text",
-      text: "削除",
-      emoji: true,
-    },
-    value: "click_me_123",
-    action_id: "button-action",
-  },
 };
 
 let add_ticket_form = {
@@ -99,7 +9,7 @@ let add_ticket_form = {
   type: "input",
   element: {
     type: "plain_text_input",
-    action_id: "plain_text_input-action",
+    action_id: "add-ticket",
   },
   // hint: {
   //   type: "plain_text",
@@ -107,8 +17,7 @@ let add_ticket_form = {
   // },
   label: {
     type: "plain_text",
-    text: "Ticket No.",
-    emoji: true,
+    text: "Ticket No."
   },
 };
 
@@ -123,10 +32,9 @@ let add_ticket_btn = {
     text: {
       type: "plain_text",
       text: "追加",
-      emoji: true,
     },
-    value: "click_me_123",
-    action_id: "button-action",
+    value: "add-ticket",
+    action_id: "add-ticket-btn",
   },
 };
 
@@ -149,7 +57,18 @@ let modal_framework = {
 let base_modal = async () => ({
   ...modal_framework,
   blocks: [
-    // ... await ticket_generator(),
+    // ...(await ticket_generator(
+    //   [
+    //     { id: 1, name: "新規" },
+    //     { id: 2, name: "進行中" },
+    //     { id: 3, name: "フィードバック" },
+    //   ],
+    //   [
+    //     { id: 8, name: "開発" },
+    //     { id: 9, name: "テスト" },
+    //     { id: 10, name: "会議・検討" },
+    //   ]
+    // )),
     add_ticket_form,
     add_ticket_btn,
   ],
