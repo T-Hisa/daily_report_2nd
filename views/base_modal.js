@@ -9,7 +9,15 @@ let add_ticket_form = {
   type: "input",
   element: {
     type: "plain_text_input",
-    action_id: "add-ticket",
+    // action_id: "add-ticket-text",
+    // dispatch_action_config: {
+    //   trigger_actions_on: ["on_character_entered"]
+    // },
+    action_id: "add-ticket-txt",
+    placeholder: {
+      type: "plain_text",
+      text: "チケット番号を入力",
+    },
   },
   // hint: {
   //   type: "plain_text",
@@ -17,7 +25,7 @@ let add_ticket_form = {
   // },
   label: {
     type: "plain_text",
-    text: "Ticket No."
+    text: "Ticket No",
   },
 };
 
@@ -54,24 +62,32 @@ let modal_framework = {
   },
 };
 
-let base_modal = async () => ({
+// let base_modal = async () => ({
+//   ...modal_framework,
+//   blocks: [
+//     ...(await ticket_generator(
+//       [
+//         { id: 1, name: "新規" },
+//         { id: 2, name: "進行中" },
+//         { id: 3, name: "フィードバック" },
+//       ],
+//       [
+//         { id: 8, name: "開発" },
+//         { id: 9, name: "テスト" },
+//         { id: 10, name: "会議・検討" },
+//       ]
+//     )),
+//     add_ticket_form,
+//     add_ticket_btn,
+//   ],
+// });
+
+let base_modal = {
   ...modal_framework,
   blocks: [
-    // ...(await ticket_generator(
-    //   [
-    //     { id: 1, name: "新規" },
-    //     { id: 2, name: "進行中" },
-    //     { id: 3, name: "フィードバック" },
-    //   ],
-    //   [
-    //     { id: 8, name: "開発" },
-    //     { id: 9, name: "テスト" },
-    //     { id: 10, name: "会議・検討" },
-    //   ]
-    // )),
     add_ticket_form,
     add_ticket_btn,
   ],
-});
+};
 
 module.exports = base_modal;
