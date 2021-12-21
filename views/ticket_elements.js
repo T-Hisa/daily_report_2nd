@@ -38,12 +38,16 @@ let gen_options = async (options, type) => {
       console.error(e);
     }
   } else {
-    return await new Promise((resolve) => {
+    // return await new Promise((resolve) => {
+    //   setTimeout(resolve, 500)
+    // }).then(() => {
+    //   console.log('setTimeout was done!')
+    //   return build_options(options)
+    // })
+    await new Promise((resolve) => {
       setTimeout(resolve, 500)
-    }).then(() => {
-      console.log('setTimeout was done!')
-      return build_options(options)
     })
+    return build_options(options)
     // return build_options(options)
   }
 };

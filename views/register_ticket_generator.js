@@ -1,10 +1,8 @@
 let { status_element, activity_element } = require("./ticket_elements");
 
-
 let divider = {
   type: "divider",
 };
-
 
 let ticket_title = () => ({
   type: "section",
@@ -26,9 +24,8 @@ let register_time = () => ({
     placeholder: {
       type: "plain_text",
       text: "Select time",
-      emoji: true,
     },
-    action_id: "timepicker-action",
+    action_id: "time",
   },
 });
 
@@ -37,17 +34,15 @@ let register_coment = () => ({
   element: {
     type: "plain_text_input",
     multiline: true,
-    action_id: "plain_text_input-action",
+    action_id: "comment",
     placeholder: {
       type: "plain_text",
       text: "コメント",
-      emoji: true,
     },
   },
   label: {
     type: "plain_text",
     text: " ",
-    emoji: true,
   },
 });
 
@@ -62,10 +57,9 @@ let remove_ticket_btn = {
     text: {
       type: "plain_text",
       text: "削除",
-      emoji: true,
     },
     value: "click_me_123",
-    action_id: "button-action",
+    action_id: "rm-ticket-btn",
   },
 };
 

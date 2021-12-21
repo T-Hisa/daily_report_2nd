@@ -1,7 +1,20 @@
-let ticket_generator = require('./update_ticket_generator')
+let ticket_generator = require("./register_ticket_generator");
 
 let divider = {
   type: "divider",
+};
+
+let api_key_input_form = {
+  type: "input",
+  element: {
+    type: "plain_text_input",
+    action_id: "plain_text_input-action",
+  },
+  label: {
+    type: "plain_text",
+    text: "API Key",
+    emoji: true,
+  },
 };
 
 let add_ticket_form = {
@@ -9,10 +22,6 @@ let add_ticket_form = {
   type: "input",
   element: {
     type: "plain_text_input",
-    // action_id: "add-ticket-text",
-    // dispatch_action_config: {
-    //   trigger_actions_on: ["on_character_entered"]
-    // },
     action_id: "add-ticket-txt",
     placeholder: {
       type: "plain_text",
@@ -29,6 +38,7 @@ let add_ticket_form = {
   },
 };
 
+// このボタンに、チャンネルのIDを持たせて、最後のレポート送信時にチャンネルに送信する。
 let add_ticket_btn = {
   type: "section",
   text: {
@@ -48,6 +58,7 @@ let add_ticket_btn = {
 
 let modal_framework = {
   type: "modal",
+  callback_id: "submit-today-report",
   title: {
     type: "plain_text",
     text: "My App",
@@ -85,6 +96,9 @@ let modal_framework = {
 let base_modal = {
   ...modal_framework,
   blocks: [
+    divider,
+    api_key_input_form,
+    divider,
     add_ticket_form,
     add_ticket_btn,
   ],
