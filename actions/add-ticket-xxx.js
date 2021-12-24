@@ -59,7 +59,7 @@ app.action("add-ticket-btn", async ({ ack, body, context, client }) => {
       view: view,
       view_id: view_id,
     });
-    console.log("update view successfully !");
+    // console.log("update view successfully !");
   } catch (e) {
     console.error(e);
     console.error("view update error at btn action!");

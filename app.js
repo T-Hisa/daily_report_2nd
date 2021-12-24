@@ -23,9 +23,6 @@ module.exports = {
 
 require('./commands')
 require('./actions')
-// require('./views')
-
-// require('./events')
 
 // for disposing as a single server
 // const app = new App({

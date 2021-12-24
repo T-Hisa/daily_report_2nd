@@ -14,10 +14,6 @@ app.action("rm-ticket-btn", async ({ ack, body, client, context, payload }) => {
 
   const ticket_no = payload["value"];
   const blocks = view["blocks"];
-  console.log(`blocks is ${blocks}`);
-  console.log(`blocks[0].keys is ${Object.keys(blocks[0])}`);
-  console.log(`blocks.length is ${blocks.length}`);
-  console.log(`values.keys is ${Object.keys(values)}`);
   remove_ticket_form(blocks, ticket_no);
 
   try {
@@ -27,6 +23,6 @@ app.action("rm-ticket-btn", async ({ ack, body, client, context, payload }) => {
       view_id: view_id,
     });
   } catch {
-    console.error("view update error at txt action!");
+    console.error("view update error at remove action!");
   }
 });
