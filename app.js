@@ -1,4 +1,5 @@
 // Require the Bolt package (github.com/slackapi/bolt)
+require('dotenv').config()
 const { App, AwsLambdaReceiver } = require("@slack/bolt");
 
 const awsLambdaReceiver = new AwsLambdaReceiver({

@@ -1,22 +1,25 @@
-let { status_element, activity_element } = require("./ticket_elements");
+const { status_element, activity_element } = require("./ticket_elements");
+const url = process.env.REDMINE_URL;
 
 let divider = {
   type: "divider",
 };
 
-let ticket_title = () => ({
+let ticket_title = (ticket_no, tracker, subject) => ({
   type: "section",
   text: {
     type: "mrkdwn",
-    text: "<https://sample.jp|バグ #40197> : *サポートフィーの算出の修正*",
+    // text: "<https://sample.jp|バグ #40197> : *サポートフィーの算出の修正*",
+    text: `*<${url}/issues/${ticket_no}|${tracker} #${ticket_no}> : ${subject}*`,
   },
+  block_id: `${ticket_no}-title`
 });
 
-let register_time = () => ({
+let register_time = (ticket_no) => ({
   type: "section",
   text: {
     type: "plain_text",
-    text: "作業時間",
+    text: "　作業時間",
   },
   accessory: {
     type: "timepicker",
@@ -27,9 +30,10 @@ let register_time = () => ({
     },
     action_id: "time",
   },
+  block_id: `${ticket_no}-time`,
 });
 
-let register_coment = () => ({
+let register_coment = (ticket_no) => ({
   type: "input",
   element: {
     type: "plain_text_input",
@@ -44,9 +48,11 @@ let register_coment = () => ({
     type: "plain_text",
     text: " ",
   },
+  block_id: `${ticket_no}-comment`,
+  optional: true,
 });
 
-let remove_ticket_btn = {
+let remove_ticket_btn = (ticket_no) => ({
   type: "section",
   text: {
     type: "mrkdwn",
@@ -58,28 +64,26 @@ let remove_ticket_btn = {
       type: "plain_text",
       text: "削除",
     },
-    value: "click_me_123",
+    value: ticket_no,
     action_id: "rm-ticket-btn",
   },
-};
+  block_id: ticket_no,
+});
 
-let ticket_generator = async (statuses, activities) => {
+let ticket_generator = (ticket_no, tracker, subject, status) => {
   return [
     divider,
-    ticket_title(),
+    ticket_title(ticket_no, tracker, subject),
     {
       type: "actions",
-      elements: [
-        await status_element(statuses),
-        await activity_element(activities),
-      ],
+      elements: [status_element(status), activity_element],
+      block_id: `${ticket_no}-options`
     },
-    register_time(),
-    register_coment(),
-    remove_ticket_btn,
-    divider,
+    register_time(ticket_no),
+    register_coment(ticket_no),
+    remove_ticket_btn(ticket_no),
     divider,
   ];
 };
 
-module.exports = ticket_generator
+module.exports = ticket_generator;
