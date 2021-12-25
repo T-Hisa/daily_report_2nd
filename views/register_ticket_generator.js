@@ -5,12 +5,12 @@ let divider = {
   type: "divider",
 };
 
-let ticket_title = (ticket_no, tracker, subject) => ({
+let ticket_title = (ticket_no, tracker_name, subject) => ({
   type: "section",
   text: {
     type: "mrkdwn",
     // text: "<https://sample.jp|バグ #40197> : *サポートフィーの算出の修正*",
-    text: `*<${url}/issues/${ticket_no}|${tracker} #${ticket_no}> : ${subject}*`,
+    text: `*<${url}/issues/${ticket_no}|${tracker_name} #${ticket_no}> : ${subject}*`,
   },
   block_id: `${ticket_no}-title`
 });
@@ -70,10 +70,10 @@ let remove_ticket_btn = (ticket_no) => ({
   block_id: ticket_no,
 });
 
-let ticket_generator = (ticket_no, tracker, subject, status) => {
+let ticket_generator = (ticket_no, tracker_name, subject, status) => {
   return [
     divider,
-    ticket_title(ticket_no, tracker, subject),
+    ticket_title(ticket_no, tracker_name, subject),
     {
       type: "actions",
       elements: [status_element(status), activity_element],

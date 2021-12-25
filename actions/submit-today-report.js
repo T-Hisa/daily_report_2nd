@@ -30,7 +30,7 @@ app.view("submit-today-report", async ({ ack, view, context, client }) => {
   // api-key が間違っていたら、エラー発生
   let username = "";
   try {
-    username = get_username(api_key);
+    username = await get_username(api_key);
   } catch {
     console.log(`wrong api_key ${api_key}`);
     return;
@@ -43,7 +43,7 @@ app.view("submit-today-report", async ({ ack, view, context, client }) => {
   const write_contents = make_write_contents(values);
   extract_title_blocks(blocks, write_contents);
 
-  const [generate_blocks] = await make_send_blocks(
+  const [generate_blocks] = make_send_blocks(
     write_contents,
     api_key,
     username
