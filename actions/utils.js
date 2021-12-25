@@ -118,18 +118,7 @@ const send_status_options = {
   5: "【終了】",
   6: "【終了】",
   7: "【終了】",
-  // 2: "・進行中'",
-  // 4: "・進行中'",
-  // 11: "・進行中'",
-  // 3: "・終了'",
-  // 5: "・終了'",
-  // 6: "・終了'",
-  // 7: "・終了'",
 };
-
-// const get_status = (status_id) => {
-//   return status_options_base.find(status => status['id'] === status_id)
-// }
 
 const get_activity_name = (activity_id) => {
   return activity_options.find((activity) => activity["id"] == activity_id)[
@@ -141,7 +130,7 @@ const send_name_section = (name) => ({
   type: "section",
   text: {
     type: "mrkdwn",
-    text: `~~ *${name}*'s today done list are followings. ~~`,
+    text: `*${name}*'s today done list are followings.`,
   },
 });
 
@@ -172,13 +161,18 @@ const send_content = (title, activity_name, time, comment) => {
   };
 };
 
-const make_send_blocks = async (write_contents, api_key) => {
-  const blocks = [];
+const get_username = (api_key) => {
   let get_user_url = BASE_URL + "/users/current.json";
-  const header = header_generator(api_key);
+  const header = header_generator(api_key)
   // const {lastname} =  (await axios.get(get_user_url, header))['data']['user];
   const lastname = "Hisatsune";
-  blocks.push(send_name_section(lastname));
+  return lastname
+}
+
+const make_send_blocks = async (write_contents, api_key, username) => {
+  const blocks = [];
+  const header = header_generator(api_key);
+  blocks.push(send_name_section(username));
   const section_send_count = {};
 
   Object.values(write_contents).forEach((write_content) => {
@@ -247,4 +241,5 @@ module.exports = {
   update_hint_word_for_txt_action,
   remove_ticket_form,
   make_send_blocks,
+  get_username
 };

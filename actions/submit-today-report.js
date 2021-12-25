@@ -1,5 +1,5 @@
 const { app } = require("../app");
-const { make_send_blocks } = require("./utils");
+const { make_send_blocks, get_username } = require("./utils");
 
 const make_write_contents = (values) => {
   let ticket_no;
@@ -61,34 +61,58 @@ const extract_title_blocks = (blocks, write_contents) => {
   }
 };
 
-app.view(
-  "submit-today-report",
-  async ({ ack, body, payload, view, context, client, logger }) => {
-    // ack();
-
-    const blocks = view["blocks"];
-    const block_length = blocks.length;
-
-    const add_btn = blocks[block_length - 1];
-    const channel_id = add_btn["accessory"]["value"];
-    const values = view.state.values;
-
-    const write_contents = make_write_contents(values);
-    extract_title_blocks(blocks, write_contents);
-
-    const api_key = values['api-key']['api-action']['value']
-    const generate_blocks = await make_send_blocks(write_contents, api_key);
-
-    try {
-      const result = app.client.chat.postMessage({
-        token: context.botToken,
-        channel: channel_id,
-        blocks: generate_blocks
-      });
-      console.log(`result is ${result}`)
-    } catch (e) {
-      console.error(e);
-      console.error("postMessage Error !!!!!");
-    }
+app.view("submit-today-report", async ({ ack, view, context, client }) => {
+  const blocks = view["blocks"];
+  const block_count = blocks.length;
+  // チケットがひとつも追加されていない状態
+  if (block_count < 6) {
+    console.log('please generate any ticket.')
+    return;
   }
-);
+  const values = view.state.values;
+  const api_key = values["api-key"]["api-action"]["value"];
+
+  // api-key が間違っていたら、エラー発生
+  let username = "";
+  try {
+    username = get_username(api_key);
+  } catch {
+    console.log(`wrong api_key ${api_key}`);
+    return;
+  }
+  ack();
+
+  const block_length = blocks.length;
+  const add_btn = blocks[block_length - 1];
+  const channel_id = add_btn["accessory"]["value"];
+
+  const write_contents = make_write_contents(values);
+  extract_title_blocks(blocks, write_contents);
+
+  const generate_blocks = await make_send_blocks(
+    write_contents,
+    api_key,
+    username
+  );
+
+  try {
+    const result = await client.chat.postMessage({
+      token: context.botToken,
+      channel: channel_id,
+      blocks: generate_blocks,
+      // blocks: [
+      //   {
+      //     type: "section",
+      //     text: {
+      //       type: "mrkdwn",
+      //       text: ` ああああ`,
+      //     },
+      //   },
+      // ],
+    });
+    console.log(`result is ${result}`);
+  } catch (e) {
+    console.error(e);
+    console.error("postMessage Error !!!!!");
+  }
+});
