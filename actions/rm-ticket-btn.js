@@ -7,7 +7,6 @@ app.action("rm-ticket-btn", async ({ ack, body, client, context, payload }) => {
   const view = body["view"];
   const view_id = view["id"];
   const values = view.state.values;
-  console.log(`values are ${values}`);
   for (let delete_target of delete_list) {
     delete view[delete_target];
   }

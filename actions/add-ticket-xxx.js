@@ -21,6 +21,7 @@ app.action("add-ticket-txt", async ({ ack, body, client, context }) => {
 
   const api_key = values["api-key"]["api-action"].value;
   is_number_validate(ticket_no, blocks) &&
+    is_already_exist(ticket_no, values, blocks) &&
     (await update_hint_word_for_txt_action(ticket_no, blocks, api_key));
 
   try {

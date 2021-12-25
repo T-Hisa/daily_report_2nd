@@ -43,9 +43,22 @@ app.view("submit-today-report", async ({ ack, view, context, client }) => {
   const write_contents = make_write_contents(values);
   extract_title_blocks(blocks, write_contents);
 
-  const generate_blocks = make_send_blocks(write_contents, api_key, username);
+  const [generate_blocks, promises] = make_send_blocks(
+    write_contents,
+    api_key,
+    username
+  );
+  Promise.all(promises).then((results) => {
+    for (let result of results) {
+        console.log(`result.data is ${result.data}`);
+        console.log(`result.status is ${result.status}`);
+        console.log(`result.statusText is ${result.statusText}`);
+    }
+    console.log(`results is ${results}`);
+    // redmine にチケット情報更新 , 時間登録が終了したら、ack() を呼び出し完了させる。
+    ack();
+  });
 
-  ack();
   try {
     const result = await client.chat.postMessage({
       token: context.botToken,

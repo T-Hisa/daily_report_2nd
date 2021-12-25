@@ -234,12 +234,14 @@ const make_send_blocks = (write_contents, api_key, username) => {
   blocks.push(send_name_section(username));
   const section_send_count = {};
 
+  const promises = []
+
   Object.keys(write_contents).forEach((ticket_no) => {
     const { status_id, activity_id, comment, time, title } =
       write_contents[ticket_no];
-
-    register_time(ticket_no, activity_id, time, comment, header);
-    update_ticket(ticket_no, status_id, header);
+    // console.log(`status_id is ${status_id} ${typeof status_id}`)
+    promises.push(register_time(ticket_no, activity_id, time, comment, header))
+    promises.push(update_ticket(ticket_no, status_id, header));
 
     const activity_name = get_activity_name(activity_id);
     let section_name = send_status_options[status_id];
@@ -272,10 +274,11 @@ const make_send_blocks = (write_contents, api_key, username) => {
       section_init_within_blocks_index + section_send_count[section_name];
     blocks.splice(insert_index, 0, content);
   });
-  return blocks;
+  return [blocks, promises];
 };
 
 const register_time = (ticket_no, activity_id, time, comment, header) => {
+  // console.log(`${ticket_no} ${typeof ticket_no} ${activity_id} ${typeof activity_id} ${time} ${typeof time}`)
   let register_time_url = BASE_URL + "/time_entries.json";
   let body = {
     time_entry: {
@@ -285,7 +288,7 @@ const register_time = (ticket_no, activity_id, time, comment, header) => {
       comments: comment,
     },
   };
-  axios.post(register_time_url, body, header);
+  return axios.post(register_time_url, body, header);
 };
 
 const update_ticket = (ticket_no, status_id, header) => {
@@ -295,7 +298,7 @@ const update_ticket = (ticket_no, status_id, header) => {
       status_id,
     },
   };
-  axios.put(update_ticket_url, body, header);
+  return axios.put(update_ticket_url, body, header);
 };
 
 module.exports = {
