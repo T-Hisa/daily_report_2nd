@@ -68,19 +68,19 @@ const update_hint_word_for_txt_action = async (
   const header = header_generator(api_key);
   let hint_word;
   try {
-    // await new Promise((resolve) => {
-    //   setTimeout(() => {
-    //     console.log("Promise processing!!!");
-    //     return resolve("result");
-    //   }, 100);
-    // });
-    // const hint_word = `#${ticket_no}:サポート AzurePlanにてSendGridの請求が反映されない`;
-    const issue_url = BASE_URL + `/issues/${ticket_no}.json`;
-    const { subject, tracker } = (await axios.get(issue_url, header))["data"][
-      "issue"
-    ];
-    const trackr_name = tracker['name']
-    hint_word = `#${ticket_no}:${trackr_name} ${subject}`;
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        console.log("Promise processing!!!");
+        return resolve("result");
+      }, 1500);
+    });
+    const hint_word = `#${ticket_no}:サポート AzurePlanにてSendGridの請求が反映されない`;
+    // const issue_url = BASE_URL + `/issues/${ticket_no}.json`;
+    // const { subject, tracker } = (await axios.get(issue_url, header))["data"][
+    //   "issue"
+    // ];
+    // const trackr_name = tracker['name']
+    // hint_word = `#${ticket_no}:${trackr_name} ${subject}`;
 
     replace_add_ticket_form(origin_blocks, hint_word);
   } catch (e) {
@@ -93,30 +93,33 @@ const update_hint_word_for_txt_action = async (
 const normal_adding_process = async (ticket_no, origin_blocks, api_key) => {
   let subject, tracker, status, tracker_name, hint_word;
   try {
-    // await new Promise((resolve) => {
-    //   setTimeout(() => {
-    //     console.log("Promise processing!!!");
-    //     return resolve("result");
-    //   }, 100);
-    // });
-    const header = header_generator(api_key);
-    const issue_url = BASE_URL + `/issues/${ticket_no}.json`;
-    const ticket = (await axios.get(issue_url, header))["data"]["issue"];
-    tracker = ticket["tracker"];
-    subject = ticket["subject"];
-    status = ticket["status"];
-    tracker_name = tracker["name"];
-    hint_word = `#${ticket_no} ${subject}`;
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        console.log("Promise processing!!!");
+        return resolve("result");
+      }, 1500);
+    });
+    hint_word = 'hint_word'
+    // const header = header_generator(api_key);
+    // const issue_url = BASE_URL + `/issues/${ticket_no}.json`;
+    // const ticket = (await axios.get(issue_url, header))["data"]["issue"];
+    // tracker = ticket["tracker"];
+    // subject = ticket["subject"];
+    // status = ticket["status"];
+    // tracker_name = tracker["name"];
+    // hint_word = `#${ticket_no} ${subject}`;
   } catch (e) {
     console.error(e)
     not_found_issue(origin_blocks, ticket_no);
     return;
   }
-  // const status = { id: 2, name: "進行中" };
+  status = { id: 2, name: "進行中" };
   const ticket_update_blocks = ticket_generator(
     ticket_no,
-    tracker["name"],
-    subject,
+    "tracker",
+    "subject",
+    // tracker["name"],
+    // subject,
     status
   );
   insert_ticket_form(origin_blocks, ticket_update_blocks);
@@ -224,7 +227,12 @@ const send_content = (title, activity_name, time, comment) => {
 const get_username = async (api_key) => {
   let get_user_url = BASE_URL + "/users/current.json";
   const header = header_generator(api_key);
-  const { lastname } = (await axios.get(get_user_url, header))["data"]["user"];
+  // const { lastname } = (await axios.get(get_user_url, header))["data"]["user"];
+  const lastname = await new Promise(resolve => {
+    setTimeout(() => {
+      resolve('Hisatsune')
+    }, 1500)
+  })
   return lastname;
 };
 
@@ -288,7 +296,12 @@ const register_time = (ticket_no, activity_id, time, comment, header) => {
       comments: comment,
     },
   };
-  return axios.post(register_time_url, body, header);
+  // return axios.post(register_time_url, body, header);
+  return new Promise(resolve => {
+    setTimeout(() => {
+      return resolve(`#${ticket_no} registered time !!`)
+    }, 1500)
+  })
 };
 
 const update_ticket = (ticket_no, status_id, header) => {
@@ -298,7 +311,12 @@ const update_ticket = (ticket_no, status_id, header) => {
       status_id,
     },
   };
-  return axios.put(update_ticket_url, body, header);
+  // return axios.put(update_ticket_url, body, header);
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      return resolve(`#${ticket_no} updated status !!`);
+    }, 1500);
+  });
 };
 
 module.exports = {

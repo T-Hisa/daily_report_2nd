@@ -48,26 +48,18 @@ app.view("submit-today-report", async ({ ack, view, context, client }) => {
     api_key,
     username
   );
-  Promise.all(promises).then((results) => {
-    for (let result of results) {
-        console.log(`result.data is ${result.data}`);
-        console.log(`result.status is ${result.status}`);
-        console.log(`result.statusText is ${result.statusText}`);
+  ack();
+  Promise.all(promises).then(() => {
+    // ack();
+    try {
+      client.chat
+        .postMessage({
+          token: context.botToken,
+          channel: channel_id,
+          blocks: generate_blocks,
+          text: "to curve warn-level log",
+        })
+    } catch (e) {
     }
-    console.log(`results is ${results}`);
-    // redmine にチケット情報更新 , 時間登録が終了したら、ack() を呼び出し完了させる。
-    ack();
   });
-
-  try {
-    const result = await client.chat.postMessage({
-      token: context.botToken,
-      channel: channel_id,
-      blocks: generate_blocks,
-    });
-    console.log(`result is ${result}`);
-  } catch (e) {
-    console.error(e);
-    console.error("postMessage Error !!!!!");
-  }
 });
