@@ -1,54 +1,9 @@
 const { app } = require("../app");
-const { make_send_blocks, get_username } = require("./utils");
-
-const make_write_contents = (values) => {
-  let ticket_no;
-  const write_contents = {};
-  for (let value of Object.keys(values)) {
-    switch (true) {
-      case value.indexOf("-options") > -1:
-        ticket_no = value.replace("-options", "");
-        const status_id = values[value]["status"]["selected_option"].value;
-        const activity_id = values[value]["activity"]["selected_option"].value;
-        write_contents[ticket_no] = {
-          status_id,
-          activity_id,
-        };
-        continue;
-      case value.indexOf("-comment") > -1:
-        ticket_no = value.replace("-comment", "");
-        const comment = values[value]["comment"].value;
-        write_contents[ticket_no]["comment"] = comment;
-        continue;
-      case value.indexOf("-time") > -1:
-        ticket_no = value.replace("-time", "");
-        const time_dict = values[value]["time"]["selected_time"];
-        let hour = "";
-        let minute = "";
-        let flag = true;
-        for (let t of Object.keys(time_dict)) {
-          if (flag) {
-            if (time_dict[t] !== ":") {
-              hour += time_dict[t];
-            } else {
-              flag = false;
-            }
-          } else {
-            minute += time_dict[t];
-          }
-        }
-        hour = Number(hour);
-        minute = Number(minute) / 60;
-        let register_time = hour + minute;
-        // if (String(register_time).length === 1) {
-        //   register_time = String(register_time) + '.0'
-        // }
-        write_contents[ticket_no]["time"] = register_time;
-        continue;
-    }
-  }
-  return write_contents;
-};
+const {
+  make_send_blocks,
+  get_username,
+  make_write_contents,
+} = require("./utils");
 
 const extract_title_blocks = (blocks, write_contents) => {
   for (let block of blocks) {
@@ -66,7 +21,7 @@ app.view("submit-today-report", async ({ ack, view, context, client }) => {
   const block_count = blocks.length;
   // チケットがひとつも追加されていない状態
   if (block_count < 6) {
-    console.log('please generate any ticket.')
+    console.log("please generate any ticket.");
     return;
   }
   const values = view.state.values;
@@ -80,7 +35,6 @@ app.view("submit-today-report", async ({ ack, view, context, client }) => {
     console.log(`wrong api_key ${api_key}`);
     return;
   }
-  ack();
 
   const block_length = blocks.length;
   const add_btn = blocks[block_length - 1];
@@ -89,26 +43,18 @@ app.view("submit-today-report", async ({ ack, view, context, client }) => {
   const write_contents = make_write_contents(values);
   extract_title_blocks(blocks, write_contents);
 
-  const generate_blocks = await make_send_blocks(
+  const [generate_blocks] = await make_send_blocks(
     write_contents,
     api_key,
     username
   );
 
+  ack();
   try {
     const result = await client.chat.postMessage({
       token: context.botToken,
       channel: channel_id,
       blocks: generate_blocks,
-      // blocks: [
-      //   {
-      //     type: "section",
-      //     text: {
-      //       type: "mrkdwn",
-      //       text: ` ああああ`,
-      //     },
-      //   },
-      // ],
     });
     console.log(`result is ${result}`);
   } catch (e) {

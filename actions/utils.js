@@ -109,6 +109,52 @@ const normal_adding_process = async (ticket_no, origin_blocks, api_key) => {
   replace_add_ticket_form(origin_blocks, " ");
 };
 
+const make_write_contents = (values) => {
+  let ticket_no;
+  const write_contents = {};
+  for (let value of Object.keys(values)) {
+    switch (true) {
+      case value.indexOf("-options") > -1:
+        ticket_no = value.replace("-options", "");
+        const status_id = values[value]["status"]["selected_option"].value;
+        const activity_id = values[value]["activity"]["selected_option"].value;
+        write_contents[ticket_no] = {
+          status_id,
+          activity_id,
+        };
+        continue;
+      case value.indexOf("-comment") > -1:
+        ticket_no = value.replace("-comment", "");
+        const comment = values[value]["comment"].value;
+        write_contents[ticket_no]["comment"] = comment;
+        continue;
+      case value.indexOf("-time") > -1:
+        ticket_no = value.replace("-time", "");
+        const time_dict = values[value]["time"]["selected_time"];
+        let hour = "";
+        let minute = "";
+        let flag = true;
+        for (let t of Object.keys(time_dict)) {
+          if (flag) {
+            if (time_dict[t] !== ":") {
+              hour += time_dict[t];
+            } else {
+              flag = false;
+            }
+          } else {
+            minute += time_dict[t];
+          }
+        }
+        hour = Number(hour);
+        minute = Number(minute) / 60;
+        let register_time = hour + minute;
+        write_contents[ticket_no]["time"] = register_time;
+        continue;
+    }
+  }
+  return write_contents;
+};
+
 const send_status_options = {
   1: "【進行中】",
   2: "【進行中】",
@@ -163,11 +209,11 @@ const send_content = (title, activity_name, time, comment) => {
 
 const get_username = (api_key) => {
   let get_user_url = BASE_URL + "/users/current.json";
-  const header = header_generator(api_key)
+  const header = header_generator(api_key);
   // const {lastname} =  (await axios.get(get_user_url, header))['data']['user];
   const lastname = "Hisatsune";
-  return lastname
-}
+  return lastname;
+};
 
 const make_send_blocks = async (write_contents, api_key, username) => {
   const blocks = [];
@@ -175,9 +221,13 @@ const make_send_blocks = async (write_contents, api_key, username) => {
   blocks.push(send_name_section(username));
   const section_send_count = {};
 
-  Object.values(write_contents).forEach((write_content) => {
-    // const write_content = write_content[ticket_no]
-    const { status_id, activity_id, comment, time, title } = write_content;
+  Object.keys(write_contents).forEach((ticket_no) => {
+    const { status_id, activity_id, comment, time, title } =
+      write_contents[ticket_no];
+
+    // register_time(ticket_no, activity_id, time, comment, header);
+    // update_ticket(ticket_no, status_id, header);
+
     const activity_name = get_activity_name(activity_id);
     let section_name = send_status_options[status_id];
     // activity_name が "会議・レビュー・指導 "
@@ -195,8 +245,11 @@ const make_send_blocks = async (write_contents, api_key, username) => {
         blocks.push(send_section_title(section_name));
       }
     }
-
-    const content = send_content(title, activity_name, time, comment);
+    let write_time = time;
+    if (String(time).length === 1) {
+      write_time = String(time) + ".0";
+    }
+    const content = send_content(title, activity_name, write_time, comment);
 
     const section_init_within_blocks_index = blocks.findIndex((block) => {
       return block["text"]["text"] === section_name;
@@ -209,9 +262,8 @@ const make_send_blocks = async (write_contents, api_key, username) => {
   return blocks;
 };
 
-const register_time = (ticket_no, time, activity_id, comment, api_key) => {
+const register_time = (ticket_no, activity_id, time, comment, header) => {
   let register_time_url = BASE_URL + "/time_entries.json";
-  let header = header_generator(api_key);
   let body = {
     time_entry: {
       issue_id: ticket_no,
@@ -223,9 +275,8 @@ const register_time = (ticket_no, time, activity_id, comment, api_key) => {
   return axios.post(register_time_url, body, header);
 };
 
-const update_ticket = (ticket_no, status_id, api_key) => {
+const update_ticket = (ticket_no, status_id, header) => {
   let update_ticket_url = BASE_URL + `/issues/${ticket_no}.json`;
-  let header = header_generator(api_key);
   let body = {
     issue: {
       status_id,
@@ -240,6 +291,7 @@ module.exports = {
   normal_adding_process,
   update_hint_word_for_txt_action,
   remove_ticket_form,
+  make_write_contents,
   make_send_blocks,
-  get_username
+  get_username,
 };
