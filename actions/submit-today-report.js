@@ -20,10 +20,8 @@ app.view("submit-today-report", async ({ ack, view, context, client }) => {
   const blocks = view["blocks"];
   const block_count = blocks.length;
   // チケットがひとつも追加されていない状態
-  if (block_count < 6) {
-    console.log("please generate any ticket.");
-    return;
-  }
+  if (block_count < 6) return;
+
   const values = view.state.values;
   const api_key = values["api-key"]["api-action"]["value"];
 
@@ -32,7 +30,6 @@ app.view("submit-today-report", async ({ ack, view, context, client }) => {
   try {
     username = await get_username(api_key);
   } catch {
-    console.log(`wrong api_key ${api_key}`);
     return;
   }
 
@@ -52,14 +49,12 @@ app.view("submit-today-report", async ({ ack, view, context, client }) => {
   Promise.all(promises).then(() => {
     // ack();
     try {
-      client.chat
-        .postMessage({
-          token: context.botToken,
-          channel: channel_id,
-          blocks: generate_blocks,
-          text: "to curve warn-level log",
-        })
-    } catch (e) {
-    }
+      client.chat.postMessage({
+        token: context.botToken,
+        channel: channel_id,
+        blocks: generate_blocks,
+        text: "to curve warn-level log",
+      });
+    } catch (e) {}
   });
 });

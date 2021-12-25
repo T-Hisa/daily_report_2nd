@@ -22,6 +22,5 @@ app.action("rm-ticket-btn", async ({ ack, body, client, context, payload }) => {
       view_id: view_id,
     });
   } catch {
-    console.error("view update error at remove action!");
   }
 });

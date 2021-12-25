@@ -33,7 +33,6 @@ const header_generator = (api_key) => ({
 const is_number_validate = (ticket_no, blocks) => {
   if (!Number(ticket_no)) {
     const hint_word = "This field must be number!";
-    console.error(hint_word);
     replace_add_ticket_form(blocks, hint_word);
     return false;
   }
@@ -68,24 +67,15 @@ const update_hint_word_for_txt_action = async (
   const header = header_generator(api_key);
   let hint_word;
   try {
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        console.log("Promise processing!!!");
-        return resolve("result");
-      }, 1500);
-    });
-    const hint_word = `#${ticket_no}:サポート AzurePlanにてSendGridの請求が反映されない`;
-    // const issue_url = BASE_URL + `/issues/${ticket_no}.json`;
-    // const { subject, tracker } = (await axios.get(issue_url, header))["data"][
-    //   "issue"
-    // ];
-    // const trackr_name = tracker['name']
-    // hint_word = `#${ticket_no}:${trackr_name} ${subject}`;
+    const issue_url = BASE_URL + `/issues/${ticket_no}.json`;
+    const { subject, tracker } = (await axios.get(issue_url, header))["data"][
+      "issue"
+    ];
+    const trackr_name = tracker["name"];
+    hint_word = `#${ticket_no}:${trackr_name} ${subject}`;
 
     replace_add_ticket_form(origin_blocks, hint_word);
   } catch (e) {
-    console.error(e)
-    console.error('add-ticket-btn axios error!')
     not_found_issue(origin_blocks, ticket_no);
   }
 };
@@ -93,33 +83,22 @@ const update_hint_word_for_txt_action = async (
 const normal_adding_process = async (ticket_no, origin_blocks, api_key) => {
   let subject, tracker, status, tracker_name, hint_word;
   try {
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        console.log("Promise processing!!!");
-        return resolve("result");
-      }, 1500);
-    });
-    hint_word = 'hint_word'
-    // const header = header_generator(api_key);
-    // const issue_url = BASE_URL + `/issues/${ticket_no}.json`;
-    // const ticket = (await axios.get(issue_url, header))["data"]["issue"];
-    // tracker = ticket["tracker"];
-    // subject = ticket["subject"];
-    // status = ticket["status"];
-    // tracker_name = tracker["name"];
-    // hint_word = `#${ticket_no} ${subject}`;
+    const header = header_generator(api_key);
+    const issue_url = BASE_URL + `/issues/${ticket_no}.json`;
+    const ticket = (await axios.get(issue_url, header))["data"]["issue"];
+    tracker = ticket["tracker"];
+    subject = ticket["subject"];
+    status = ticket["status"];
+    tracker_name = tracker["name"];
+    hint_word = `#${ticket_no} ${subject}`;
   } catch (e) {
-    console.error(e)
     not_found_issue(origin_blocks, ticket_no);
     return;
   }
-  status = { id: 2, name: "進行中" };
   const ticket_update_blocks = ticket_generator(
     ticket_no,
-    "tracker",
-    "subject",
-    // tracker["name"],
-    // subject,
+    tracker["name"],
+    subject,
     status
   );
   insert_ticket_form(origin_blocks, ticket_update_blocks);
@@ -227,12 +206,7 @@ const send_content = (title, activity_name, time, comment) => {
 const get_username = async (api_key) => {
   let get_user_url = BASE_URL + "/users/current.json";
   const header = header_generator(api_key);
-  // const { lastname } = (await axios.get(get_user_url, header))["data"]["user"];
-  const lastname = await new Promise(resolve => {
-    setTimeout(() => {
-      resolve('Hisatsune')
-    }, 1500)
-  })
+  const { lastname } = (await axios.get(get_user_url, header))["data"]["user"];
   return lastname;
 };
 
@@ -242,21 +216,22 @@ const make_send_blocks = (write_contents, api_key, username) => {
   blocks.push(send_name_section(username));
   const section_send_count = {};
 
-  const promises = []
+  const promises = [];
 
   Object.keys(write_contents).forEach((ticket_no) => {
     const { status_id, activity_id, comment, time, title } =
       write_contents[ticket_no];
-    // console.log(`status_id is ${status_id} ${typeof status_id}`)
-    promises.push(register_time(ticket_no, activity_id, time, comment, header))
+    promises.push(register_time(ticket_no, activity_id, time, comment, header));
     promises.push(update_ticket(ticket_no, status_id, header));
 
     const activity_name = get_activity_name(activity_id);
     let section_name = send_status_options[status_id];
+
     // activity_name が "会議・レビュー・指導 "
     if (activity_name === "会議・レビュー・指導") {
       section_name = "【MTG】";
     }
+
     const section_count = section_send_count[section_name];
     if (section_count) {
       section_send_count[section_name] += 1;
@@ -286,7 +261,6 @@ const make_send_blocks = (write_contents, api_key, username) => {
 };
 
 const register_time = (ticket_no, activity_id, time, comment, header) => {
-  // console.log(`${ticket_no} ${typeof ticket_no} ${activity_id} ${typeof activity_id} ${time} ${typeof time}`)
   let register_time_url = BASE_URL + "/time_entries.json";
   let body = {
     time_entry: {
@@ -296,12 +270,7 @@ const register_time = (ticket_no, activity_id, time, comment, header) => {
       comments: comment,
     },
   };
-  // return axios.post(register_time_url, body, header);
-  return new Promise(resolve => {
-    setTimeout(() => {
-      return resolve(`#${ticket_no} registered time !!`)
-    }, 1500)
-  })
+  return axios.post(register_time_url, body, header);
 };
 
 const update_ticket = (ticket_no, status_id, header) => {
@@ -311,12 +280,7 @@ const update_ticket = (ticket_no, status_id, header) => {
       status_id,
     },
   };
-  // return axios.put(update_ticket_url, body, header);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      return resolve(`#${ticket_no} updated status !!`);
-    }, 1500);
-  });
+  return axios.put(update_ticket_url, body, header);
 };
 
 module.exports = {
