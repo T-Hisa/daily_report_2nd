@@ -5,9 +5,6 @@ const { base_modal } = require("../views");
 app.command("/send_report", async ({ ack, payload, context }) => {
   ack();
   const channel_id = payload.channel_id
-  console.log(`trigger_id is ${payload.trigger_id}`)
-  console.log(`payload.keys is ${Object.keys(payload)}`)
-  console.log("command invoked !!!");
   try {
     result = await app.client.views.open({
       token: context.botToken,

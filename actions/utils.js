@@ -75,20 +75,22 @@ const update_hint_word_for_txt_action = async (
     //   }, 100);
     // });
     // const hint_word = `#${ticket_no}:サポート AzurePlanにてSendGridの請求が反映されない`;
+    const issue_url = BASE_URL + `/issues/${ticket_no}.json`;
     const { subject, tracker } = (await axios.get(issue_url, header))["data"][
       "issue"
     ];
-    hint_word = `#${ticket_no}:${tracker} ${subject}`;
+    const trackr_name = tracker['name']
+    hint_word = `#${ticket_no}:${trackr_name} ${subject}`;
 
     replace_add_ticket_form(origin_blocks, hint_word);
   } catch (e) {
+    console.error(e)
+    console.error('add-ticket-btn axios error!')
     not_found_issue(origin_blocks, ticket_no);
   }
 };
 
 const normal_adding_process = async (ticket_no, origin_blocks, api_key) => {
-  const header = header_generator(api_key);
-  const issue_url = `/issues/${ticket_no}.json`;
   let subject, tracker, status, tracker_name, hint_word;
   try {
     // await new Promise((resolve) => {
@@ -97,6 +99,8 @@ const normal_adding_process = async (ticket_no, origin_blocks, api_key) => {
     //     return resolve("result");
     //   }, 100);
     // });
+    const header = header_generator(api_key);
+    const issue_url = BASE_URL + `/issues/${ticket_no}.json`;
     const ticket = (await axios.get(issue_url, header))["data"]["issue"];
     tracker = ticket["tracker"];
     subject = ticket["subject"];
@@ -104,14 +108,14 @@ const normal_adding_process = async (ticket_no, origin_blocks, api_key) => {
     tracker_name = tracker["name"];
     hint_word = `#${ticket_no} ${subject}`;
   } catch (e) {
-    console.error("add-ticket-txt axios error!");
-    not_found_issue(origin_blocks, ticket_no)
+    console.error(e)
+    not_found_issue(origin_blocks, ticket_no);
     return;
   }
   // const status = { id: 2, name: "進行中" };
   const ticket_update_blocks = ticket_generator(
     ticket_no,
-    tracker['name'],
+    tracker["name"],
     subject,
     status
   );

@@ -43,11 +43,7 @@ app.view("submit-today-report", async ({ ack, view, context, client }) => {
   const write_contents = make_write_contents(values);
   extract_title_blocks(blocks, write_contents);
 
-  const [generate_blocks] = make_send_blocks(
-    write_contents,
-    api_key,
-    username
-  );
+  const generate_blocks = make_send_blocks(write_contents, api_key, username);
 
   ack();
   try {
