@@ -211,7 +211,7 @@ const send_content = (title, activity_name, time, comment) => {
   }
   let text;
   if (!!comment) {
-    comment = comment.replace('\n', '\n\t\t○ ')
+    comment = comment.replace(/\n/g, '\n\t\t○ ')
     text = `\n\t\t○ ${comment}`;
   } else {
     text = "";
