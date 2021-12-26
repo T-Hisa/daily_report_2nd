@@ -241,7 +241,9 @@ const make_send_blocks = (write_contents, api_key, username) => {
 };
 
 const register_time = (ticket_no, activity_id, time, comment, header) => {
-  comment = comment.replace(/\n/g, "\t");
+  if (!!comment) {
+    comment = comment.replace(/\n/g, "\t");
+  }
   let register_time_url = BASE_URL + "/time_entries.json";
   let body = {
     time_entry: {
