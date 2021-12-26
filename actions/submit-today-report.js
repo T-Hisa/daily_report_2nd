@@ -38,6 +38,7 @@ app.view("submit-today-report", async ({ ack, view, context, client }) => {
   const channel_id = add_btn["accessory"]["value"];
   let write_contents;
   try {
+    // 登録時間が数値型に変換できなかった場合
     write_contents = make_write_contents(values);
   } catch {
     return;
