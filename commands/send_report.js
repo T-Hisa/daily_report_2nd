@@ -14,6 +14,5 @@ app.command("/send_report", async ({ ack, payload, context }) => {
       view: base_modal(channel_id),
     });
   } catch (error) {
-    console.error('error');
   }
 });
