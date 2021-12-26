@@ -12,23 +12,25 @@ let ticket_title = (ticket_no, tracker_name, subject) => ({
     // text: "<https://sample.jp|バグ #40197> : *サポートフィーの算出の修正*",
     text: `*<${url}/issues/${ticket_no}|${tracker_name} #${ticket_no}> : ${subject}*`,
   },
-  block_id: `${ticket_no}-title`
+  block_id: `${ticket_no}-title`,
 });
 
 let register_time = (ticket_no) => ({
-  type: "section",
-  text: {
-    type: "plain_text",
-    text: "　作業時間",
-  },
-  accessory: {
-    type: "timepicker",
-    initial_time: "01:30",
+  type: "input",
+  element: {
+    type: "plain_text_input",
+    action_id: `time`,
     placeholder: {
       type: "plain_text",
-      text: "Select time",
+      text: "作業時間を入力",
     },
-    action_id: "time",
+    min_length: 3,
+    max_length: 3,
+    // initial_value: '1.0'
+  },
+  label: {
+    type: "plain_text",
+    text: " ",
   },
   block_id: `${ticket_no}-time`,
 });
@@ -77,7 +79,7 @@ let ticket_generator = (ticket_no, tracker_name, subject, status) => {
     {
       type: "actions",
       elements: [status_element(status), activity_element],
-      block_id: `${ticket_no}-options`
+      block_id: `${ticket_no}-options`,
     },
     register_time(ticket_no),
     register_coment(ticket_no),

@@ -147,24 +147,9 @@ const make_write_contents = (values) => {
         continue;
       case value.indexOf("-time") > -1:
         ticket_no = value.replace("-time", "");
-        const time_dict = values[value]["time"]["selected_time"];
-        let hour = "";
-        let minute = "";
-        let flag = true;
-        for (let t of Object.keys(time_dict)) {
-          if (flag) {
-            if (time_dict[t] !== ":") {
-              hour += time_dict[t];
-            } else {
-              flag = false;
-            }
-          } else {
-            minute += time_dict[t];
-          }
-        }
-        hour = Number(hour);
-        minute = Number(minute) / 60;
-        let register_time = hour + minute;
+        const send_time = values[value]["time"].value;
+        const register_time = Number(send_time)
+        if (!register_time) throw new Error()
         write_contents[ticket_no]["time"] = register_time;
         continue;
     }
@@ -206,9 +191,9 @@ const send_section_title = (status) => ({
 });
 
 const send_content = (title, activity_name, time, comment) => {
-  if (String(time).length === 1) {
-    time = String(register_time) + ".0";
-  }
+  // if (String(time).length === 1) {
+  //   time = String(register_time) + ".0";
+  // }
   let text;
   if (!!comment) {
     comment = comment.replace(/\n/g, '\n\t\t○ ')
