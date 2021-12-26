@@ -204,11 +204,14 @@ const make_send_blocks = (write_contents, api_key, username) => {
   Object.keys(write_contents).forEach((ticket_no) => {
     const { status_id, activity_id, comment, time, title } =
       write_contents[ticket_no];
-    promises.push(register_time(ticket_no, activity_id, time, comment, header));
-    promises.push(update_ticket(ticket_no, status_id, header));
-
     const activity_name = get_activity_name(activity_id);
     let section_name = send_status_options[status_id];
+    if (activity_name === "会議・レビュー・指導") {
+      section_name = "【MTG】";
+    } else {
+      promises.push(update_ticket(ticket_no, status_id, header));
+    }
+    promises.push(register_time(ticket_no, activity_id, time, comment, header));
 
     // activity_name が "会議・レビュー・指導 "
     if (activity_name === "会議・レビュー・指導") {
