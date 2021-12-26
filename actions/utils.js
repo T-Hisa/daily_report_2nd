@@ -84,8 +84,8 @@ const update_hint_word_for_txt_action = async (
 
     replace_add_ticket_form(origin_blocks, hint_word);
   } catch (e) {
-    console.error(e)
-    console.error('add-ticket-btn axios error!')
+    console.error(e);
+    console.error("add-ticket-btn axios error!");
     not_found_issue(origin_blocks, ticket_no);
   }
 };
@@ -99,7 +99,7 @@ const normal_adding_process = async (ticket_no, origin_blocks, api_key) => {
         return resolve("result");
       }, 1500);
     });
-    hint_word = 'hint_word'
+    hint_word = "hint_word";
     // const header = header_generator(api_key);
     // const issue_url = BASE_URL + `/issues/${ticket_no}.json`;
     // const ticket = (await axios.get(issue_url, header))["data"]["issue"];
@@ -109,7 +109,7 @@ const normal_adding_process = async (ticket_no, origin_blocks, api_key) => {
     // tracker_name = tracker["name"];
     // hint_word = `#${ticket_no} ${subject}`;
   } catch (e) {
-    console.error(e)
+    console.error(e);
     not_found_issue(origin_blocks, ticket_no);
     return;
   }
@@ -147,24 +147,9 @@ const make_write_contents = (values) => {
         continue;
       case value.indexOf("-time") > -1:
         ticket_no = value.replace("-time", "");
-        const time_dict = values[value]["time"]["selected_time"];
-        let hour = "";
-        let minute = "";
-        let flag = true;
-        for (let t of Object.keys(time_dict)) {
-          if (flag) {
-            if (time_dict[t] !== ":") {
-              hour += time_dict[t];
-            } else {
-              flag = false;
-            }
-          } else {
-            minute += time_dict[t];
-          }
-        }
-        hour = Number(hour);
-        minute = Number(minute) / 60;
-        let register_time = hour + minute;
+        const send_time = values[value]["time"].value;
+        const register_time = Number(send_time);
+        if (!register_time) throw new Error();
         write_contents[ticket_no]["time"] = register_time;
         continue;
     }
@@ -206,12 +191,9 @@ const send_section_title = (status) => ({
 });
 
 const send_content = (title, activity_name, time, comment) => {
-  if (String(time).length === 1) {
-    time = String(register_time) + ".0";
-  }
   let text;
   if (!!comment) {
-    comment = comment.replace(/\n/g, '\n\t\t○ ')
+    comment = comment.replace(/\n/g, "\n\t\t○ ");
     text = `\n\t\t○ ${comment}`;
   } else {
     text = "";
@@ -229,11 +211,11 @@ const get_username = async (api_key) => {
   let get_user_url = BASE_URL + "/users/current.json";
   const header = header_generator(api_key);
   // const { lastname } = (await axios.get(get_user_url, header))["data"]["user"];
-  const lastname = await new Promise(resolve => {
+  const lastname = await new Promise((resolve) => {
     setTimeout(() => {
-      resolve('Hisatsune')
-    }, 1500)
-  })
+      resolve("Hisatsune");
+    }, 1500);
+  });
   return lastname;
 };
 
@@ -243,13 +225,13 @@ const make_send_blocks = (write_contents, api_key, username) => {
   blocks.push(send_name_section(username));
   const section_send_count = {};
 
-  const promises = []
+  const promises = [];
 
   Object.keys(write_contents).forEach((ticket_no) => {
     const { status_id, activity_id, comment, time, title } =
       write_contents[ticket_no];
     // console.log(`status_id is ${status_id} ${typeof status_id}`)
-    promises.push(register_time(ticket_no, activity_id, time, comment, header))
+    promises.push(register_time(ticket_no, activity_id, time, comment, header));
     promises.push(update_ticket(ticket_no, status_id, header));
 
     const activity_name = get_activity_name(activity_id);
@@ -269,11 +251,7 @@ const make_send_blocks = (write_contents, api_key, username) => {
         blocks.push(send_section_title(section_name));
       }
     }
-    let write_time = time;
-    if (String(time).length === 1) {
-      write_time = String(time) + ".0";
-    }
-    const content = send_content(title, activity_name, write_time, comment);
+    const content = send_content(title, activity_name, time, comment);
 
     const section_init_within_blocks_index = blocks.findIndex((block) => {
       return block["text"]["text"] === section_name;
@@ -298,11 +276,11 @@ const register_time = (ticket_no, activity_id, time, comment, header) => {
     },
   };
   // return axios.post(register_time_url, body, header);
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(() => {
-      return resolve(`#${ticket_no} registered time !!`)
-    }, 1500)
-  })
+      return resolve(`#${ticket_no} registered time !!`);
+    }, 1500);
+  });
 };
 
 const update_ticket = (ticket_no, status_id, header) => {
