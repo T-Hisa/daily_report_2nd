@@ -11,3 +11,7 @@ app.action("comment", async ({ ack }) => {
 app.action("status", async ({ ack }) => {
   ack();
 });
+
+app.action("activity", async ({ ack }) => {
+  ack();
+});
