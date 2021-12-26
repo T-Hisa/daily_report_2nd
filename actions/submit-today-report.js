@@ -36,10 +36,14 @@ app.view("submit-today-report", async ({ ack, view, context, client }) => {
   const block_length = blocks.length;
   const add_btn = blocks[block_length - 1];
   const channel_id = add_btn["accessory"]["value"];
+  let write_contents;
+  try {
+    write_contents = make_write_contents(values);
+  } catch {
+    return;
+  }
 
-  const write_contents = make_write_contents(values);
   extract_title_blocks(blocks, write_contents);
-
   const [generate_blocks, promises] = make_send_blocks(
     write_contents,
     api_key,
