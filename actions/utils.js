@@ -127,9 +127,9 @@ const make_write_contents = (values) => {
       case value.indexOf("-time") > -1:
         ticket_no = value.replace("-time", "");
         const send_time = values[value]["time"].value;
-        const register_time = Number(send_time);
-        if (!register_time) throw new Error();
-        write_contents[ticket_no]["time"] = register_time;
+        const number_time = Number(send_time);
+        if (!number_time) throw new Error();
+        write_contents[ticket_no]["time"] = send_time;
         continue;
     }
   }
@@ -181,7 +181,7 @@ const send_content = (title, activity_name, time, comment) => {
     type: "section",
     text: {
       type: "mrkdwn",
-      text: ` ●  ${title} : ${activity_name} : ${time} Hours${text}`,
+      text: ` ●  ${title} : ${activity_name} : *${time} Hours*${text}`,
     },
   };
 };

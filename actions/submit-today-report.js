@@ -51,15 +51,32 @@ app.view("submit-today-report", async ({ ack, view, context, client }) => {
     username
   );
   ack();
-  Promise.all(promises).then(() => {
-    // ack();
-    try {
+  Promise.all(promises)
+    .then(() => {
+      // ack();
+      try {
+        client.chat.postMessage({
+          token: context.botToken,
+          channel: channel_id,
+          blocks: generate_blocks,
+          text: "to curve warn-level log",
+        });
+      } catch (e) {}
+    })
+    .catch(() => {
       client.chat.postMessage({
         token: context.botToken,
         channel: channel_id,
-        blocks: generate_blocks,
+        blocks: [
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: `Failed sending *${username}*'s report.`,
+            },
+          },
+        ],
         text: "to curve warn-level log",
       });
-    } catch (e) {}
-  });
+    });
 });
